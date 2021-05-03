@@ -33,10 +33,39 @@ void setup() {
   lcd.clear();
 }
 
-int setNumber(char key) {         // Установить число
+double setNumber(char key) {         // Установить число
   lcd.clear();
   while (key != '/' && key != '*' && key != '-' && key != '+' && key != '=') {
-    isButtonPress(val);
+    boolean containDot = false;
+    if (key == ',') {
+      for (int j = 0; j < 16; j += 1) {
+        if (symbolArray[j] == ',') containDot = true;
+      } 
+    }
+    if (containDot == false) {
+      symbolArray[i] = key;
+      lcd.setCursor(i, 0);
+      lcd.print(key);
+      i += 1;
+      key = keypad.waitForKey();
+    }
+    else key = keypad.waitForKey();
+  }
+  i = 0;
+  String number;
+  for (int j = 0; j < 16; j += 1) {
+    number += symbolArray[j];
+  }
+  memset(symbolArray, 0, 16);
+  return number.toInt();
+}
+
+double setSecondNumber(char key){
+  lcd.clear();
+  while (key != '=') {
+    while(key == '/' || key == '*' || key == '-' || key == '+'){
+      key = keypad.waitForKey();
+    }
     boolean containDot = false;
     if (key == ',') {
       for (int j = 0; j < 16; j += 1) {
@@ -65,7 +94,7 @@ void division(double firstNumber, char key) {          // Деление
   lcd.clear();
   lcd.print('/');
   key = keypad.waitForKey();
-  double secondNumber = setNumber(key);
+  double secondNumber = setSecondNumber(key);
   lcd.clear();
   lcd.print(firstNumber / secondNumber);
   Serial.println(firstNumber / secondNumber);
@@ -76,7 +105,7 @@ void multiplication(double firstNumber, char key) {          // Умножени
   lcd.clear();
   lcd.print('*');
   key = keypad.waitForKey();
-  double secondNumber = setNumber(key);
+  double secondNumber = setSecondNumber(key);
   lcd.clear();
   lcd.print(firstNumber * secondNumber);
   Serial.println(firstNumber * secondNumber);
@@ -87,7 +116,7 @@ void subtraction(double firstNumber, char key) {          // Вычитание
   lcd.clear();
   lcd.print('-');
   key = keypad.waitForKey();
-  double secondNumber = setNumber(key);
+  double secondNumber = setSecondNumber(key);
   lcd.clear();
   lcd.print(firstNumber - secondNumber);
   Serial.println(firstNumber - secondNumber);
@@ -98,11 +127,11 @@ void addition(double firstNumber, char key) {          // Сложение
   lcd.clear();
   lcd.print('+');
   key = keypad.waitForKey();
-  double secondNumber = setNumber(key);
+  double secondNumber = setSecondNumber(key);
   lcd.clear();
   lcd.print(firstNumber + secondNumber);
   Serial.println(firstNumber + secondNumber);
-  result = firstNumber - secondNumber;
+  result = firstNumber + secondNumber;
 }
 
 void calculate(double firstNumber) {          // Вычисление
@@ -115,16 +144,15 @@ void isButtonPress(boolean val) {
     result = 0;
     firstNumber = 0;
     lcd.clear();
-    Serial.println(result);
+    Serial.println("reset");
   }
 }
 
 void loop() {
   bool val = digitalRead(buttonPin);
-  char key = keypad.waitForKey();
-  Serial.println(result);
+  isButtonPress(val);
+  char key = keypad.getKey();
   if (key) {
-    while(key != '='){
       switch(key) {
         case '0' ... '9':
         firstNumber = setNumber(key);
@@ -142,10 +170,7 @@ void loop() {
         case '+':
         addition(result, key);
         break;
-      }
-      key = keypad.getKey();
     }
-    calculate(result);
   }
   
   
