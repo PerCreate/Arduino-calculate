@@ -73,6 +73,7 @@ double setSecondNumber(char key){
       } 
     }
     if (containDot == false) {
+      if(key == '=') continue;
       symbolArray[i] = key;
       lcd.setCursor(i, 0);
       lcd.print(key);
@@ -144,6 +145,7 @@ void isButtonPress(boolean val) {
     result = 0;
     firstNumber = 0;
     lcd.clear();
+    lcd.print("Enter the number");
     Serial.println("reset");
   }
 }
