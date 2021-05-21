@@ -97,9 +97,18 @@ void division(double firstNumber, char key) {          // Деление
   key = keypad.waitForKey();
   double secondNumber = setSecondNumber(key);
   lcd.clear();
-  lcd.print(firstNumber / secondNumber);
-  Serial.println(firstNumber / secondNumber);
   result = firstNumber / secondNumber;
+  if(result == INFINITY || result == NAN) {
+    lcd.print("Wrong number");
+    lcd.setCursor(0,1);
+    lcd.print("Enter the number");
+    result = 0;
+  }
+  else {
+    lcd.print(firstNumber / secondNumber);
+    Serial.println(firstNumber / secondNumber);
+    Serial.println(result);
+  }
 }
 
 void multiplication(double firstNumber, char key) {          // Умножение
@@ -174,6 +183,4 @@ void loop() {
         break;
     }
   }
-  
-  
 }
